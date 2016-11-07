@@ -161,6 +161,7 @@ environment = SubResource( 1 )
 
 [node name="landscape" type="Spatial" parent="."]
 
+editor/display_folded = true
 _import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
 
 [node name="ground" type="TestCube" parent="landscape"]
