@@ -1,9 +1,8 @@
 # VR Mobile Camera
-This node plugin for Gotot Engine  enable a new kind of 3D camera.<br>
-It is needed if you wish to use a phone vr headset or cardboard.<br>
-It provide screen split for stereoscopic vision and head tracking by using accelerometer and gyroscope sensor on the phone, if gyroscope is not found, magnetometer will be used as fallback.<br>
+This node plug-in for Gotot Engine enable a new kind of 3D camera, you can use it with phone vr headset or cardboard.<br>
+It provide screen split for stereoscopic vision and head tracking by using accelerometer and gyroscope sensor on the phone, if gyroscope is not found, magnetometer will be used as fall back.<br>
 Gyroscope data are matched with accelerometer data so to have a very accurate and responsive tracking, unfortunately only hi-end phones provide gyroscope, so, magnetometer is supported too.<br>
-Magnetometer outputs a very noisy data, so, the signal is filtered in order to make it usable. The drawback of filtering data is that you introduce a lag. You can bamance noise and lag by modifiyng the Magnetometer Interpolation parameter in the camera inspector.<br>
+Magnetometer outputs a very noisy data, so, the signal is filtered in order to make it usable. The drawback of filtering data is that you introduce a lag. You can balance noise and lag by modifying the Magnetometer Interpolation parameter in the camera inspector.<br>
 <br>
 # VR Camera Parameters
 You can set some camera parameter in the inspector panel inside Godot.<br>
