@@ -1,12 +1,14 @@
 ###############################################################################################################
-#                                             VR MOBILE CAMERA v. 0.5                                         #
+#                                                VR MOBILE CAMERA                                             #
 #                                              OFFICINE PIXEL s.n.c.                                          #
 #                                              www.officinepixel.com                                          #
 ###############################################################################################################
 extends Spatial
+var cam = load("res://addons/vr_mobile_camera/vr_mobile_camera.tscn").instance()
 export var eyes_distance = .6
 export var eyes_convergence = 18.0
 export var walking_speed = 1.0
+export(bool) var stop_walking_while_selecting = true
 export var fov = 60
 export var near = 0.1
 export var far = 100
@@ -17,15 +19,24 @@ export(bool) var enable_roll = true
 export(bool) var show_data = false
 var left_eye = null
 var right_eye = null
+var prog_l =  null
+var prog_r =  null
 
 func _ready():
-	var cam = preload("res://addons/vr_mobile_camera/vr_mobile_camera.tscn").instance()
 	add_child( cam )
 	# Scale viewports according to window size
 	var screen_size = OS.get_window_size()
 	get_node("vr_mobile_camera/Viewport_left").set_rect(Rect2(Vector2(0,0),Vector2(screen_size.x/2,screen_size.y)))
 	get_node("vr_mobile_camera/Viewport_right").set_rect(Rect2(Vector2(0,0),Vector2(screen_size.x/2,screen_size.y)))
 	get_node("vr_mobile_camera/ViewportSprite_right").set_offset(Vector2(screen_size.x/2,0))
+	
+	# center progress
+	prog_l = get_node("vr_mobile_camera/Viewport_left/progress_left") 
+	prog_r = get_node("vr_mobile_camera/Viewport_right/progress_right") 
+	prog_l.set_pos(Vector2(screen_size.x/4-prog_l.get_size().x/2, screen_size.y/2-prog_l.get_size().y/2))
+	prog_r.set_pos(Vector2((screen_size.x/4)-prog_r.get_size().x/2, screen_size.y/2-prog_r.get_size().y/2))
+	prog_l.hide()
+	prog_r.hide()
 	
 	get_node("vr_mobile_camera/origin/yaw/convergence").set_translation(Vector3(0,0,-eyes_convergence))
 	get_node("vr_mobile_camera/origin/yaw/pitch/roll/fake_camera_left").set_translation(Vector3(-eyes_distance/2,0,0))
@@ -42,7 +53,42 @@ func _ready():
 	set_process(true)
 
 var counter = 0
+var timer = 0
+var last_collider = null
 func _process(delta):
+	# check for virtual buttons
+	if get_node("vr_mobile_camera/origin/yaw/pitch/roll/RayCast").is_colliding():
+		var collider = get_node("vr_mobile_camera/origin/yaw/pitch/roll/RayCast").get_collider()
+		if collider.has_method( "_on_action" ):
+			prog_l.show()
+			prog_r.show()
+			if collider.has_method( "_on_roll_in" ) and collider != last_collider:
+				last_collider = collider
+				collider._on_roll_in()
+			timer += delta*50
+			if timer>100:
+				collider._on_action()
+				timer = 0
+			prog_l.set_value(timer)
+			prog_r.set_value(timer)
+		else:
+			if last_collider != null:
+				if last_collider.has_method( "_on_roll_out" ):
+					last_collider._on_roll_out()
+				last_collider = null
+			prog_l.hide()
+			prog_r.hide()
+			timer = 0
+	else:
+		get_node("vr_mobile_camera/debug").set_text("collider:   ")
+		if last_collider != null:
+			if last_collider.has_method( "_on_roll_out" ):
+				last_collider._on_roll_out()
+			last_collider = null
+		prog_l.hide()
+		prog_r.hide()
+		timer = 0
+	
 	#rotate camera fake camera
 	var r = null
 	if Input.get_gyroscope() == Vector3(0,0,0): 
@@ -56,10 +102,12 @@ func _process(delta):
 	# rotate camera
 	rotate_vr_mobile_camera(r)
 	# move camera
-	get_node("vr_mobile_camera/origin").translate( Vector3(sin(r.y)*r.x*walking_speed, 0, cos(r.y)*r.x*walking_speed))
+	if (stop_walking_while_selecting and timer == 0) or stop_walking_while_selecting == false:
+		get_node("vr_mobile_camera/origin").translate( Vector3(sin(r.y)*r.x*walking_speed, 0, cos(r.y)*r.x*walking_speed))
 	# show data
 	if show_data:
 		update_sensors_data(r)
+	
 
 # VR CAMERA ROTATION
 func rotate_vr_mobile_camera(r):

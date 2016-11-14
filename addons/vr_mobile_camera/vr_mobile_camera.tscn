@@ -1,4 +1,6 @@
-[gd_scene format=1]
+[gd_scene load_steps=2 format=1]
+
+[ext_resource path="res://addons/vr_mobile_camera/progress.png" type="Texture" id=1]
 
 [node name="vr_mobile_camera" type="Spatial"]
 
@@ -36,9 +38,33 @@ environment = null
 h_offset = 0.0
 v_offset = 0.0
 
+[node name="progress_left" type="TextureProgress" parent="Viewport_left"]
+
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 0.0
+margin/top = 0.0
+margin/right = 128.0
+margin/bottom = 128.0
+range/min = 0.0
+range/max = 100.0
+range/step = 1.0
+range/page = 0.0
+range/value = 0.0
+range/exp_edit = false
+range/rounded = false
+texture/under = null
+texture/over = null
+texture/progress = ExtResource( 1 )
+mode = 4
+radial_fill/initial_angle = 1.4013e-43
+radial_fill/fill_degrees = 360.0
+radial_fill/center_offset = Vector2( 0, 0 )
+
 [node name="Viewport_right" type="Viewport" parent="."]
 
-editor/display_folded = true
 rect = Rect2( 0, 0, 512, 600 )
 own_world = false
 world = null
@@ -68,6 +94,31 @@ visible_layers = 1048575
 environment = null
 h_offset = 0.0
 v_offset = 0.0
+
+[node name="progress_right" type="TextureProgress" parent="Viewport_right"]
+
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 0.0
+margin/top = 0.0
+margin/right = 128.0
+margin/bottom = 128.0
+range/min = 0.0
+range/max = 100.0
+range/step = 1.0
+range/page = 0.0
+range/value = 0.0
+range/exp_edit = false
+range/rounded = false
+texture/under = null
+texture/over = null
+texture/progress = ExtResource( 1 )
+mode = 4
+radial_fill/initial_angle = 1.4013e-43
+radial_fill/fill_degrees = 360.0
+radial_fill/center_offset = Vector2( 0, 0 )
 
 [node name="ViewportSprite_left" type="ViewportSprite" parent="."]
 
@@ -129,6 +180,14 @@ transform/local = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3, 0, 0 )
 
 _import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
 transform/local = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0.3, 0, 0 )
+
+[node name="RayCast" type="RayCast" parent="origin/yaw/pitch/roll"]
+
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+enabled = true
+cast_to = Vector3( 0, 0, -1000 )
+layer_mask = 1
+type_mask = 31
 
 [node name="accelerometer" type="Label" parent="."]
 
@@ -216,6 +275,21 @@ margin/left = 10.0
 margin/top = 540.0
 margin/right = 266.0
 margin/bottom = 570.0
+percent_visible = 1.0
+lines_skipped = 0
+max_lines_visible = -1
+
+[node name="debug" type="Label" parent="."]
+
+rect/scale = Vector2( 1.5, 1.5 )
+focus/ignore_mouse = true
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 0
+margin/left = 630.0
+margin/top = 10.0
+margin/right = 886.0
+margin/bottom = 40.0
 percent_visible = 1.0
 lines_skipped = 0
 max_lines_visible = -1

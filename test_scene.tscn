@@ -1,4 +1,4 @@
-[gd_scene load_steps=5 format=1]
+[gd_scene load_steps=7 format=1]
 
 [ext_resource path="res://addons/vr_mobile_camera/vr_mobile_camera.gd" type="Script" id=1]
 [ext_resource path="res://addons/vr_mobile_camera/icon.png" type="Texture" id=2]
@@ -47,6 +47,15 @@ bcs/contrast = 1.0
 bcs/saturation = 1.0
 srgb/enabled = false
 
+[sub_resource type="BoxShape" id=4]
+
+extents = Vector3( 1, 1, 1.1219 )
+
+[sub_resource type="GDScript" id=5]
+
+resource/name = "interactive object"
+script/source = "\nextends StaticBody\n\nvar original_color = null\n\nfunc _ready():\n\toriginal_color = get_node(\"TestCube\").get_material_override().get_parameter(3)\n\nfunc _on_action():\n\ttranslate(Vector3(1,0,0))\n\nfunc _on_roll_in():\n\tget_node(\"TestCube\").get_material_override().set_parameter(3, Color(1,0,0,1))\n\nfunc _on_roll_out():\n\tget_node(\"TestCube\").get_material_override() .set_parameter(3, original_color)"
+
 [sub_resource type="FixedMaterial" id=2]
 
 flags/visible = true
@@ -64,7 +73,7 @@ fixed_flags/use_color_array = false
 fixed_flags/use_point_size = false
 fixed_flags/discard_alpha = false
 fixed_flags/use_xy_normalmap = false
-params/diffuse = Color( 1, 1, 1, 1 )
+params/diffuse = Color( 0.195312, 1, 0, 1 )
 params/specular = Color( 0, 0, 0, 1 )
 params/emission = Color( 0, 0, 0, 1 )
 params/specular_exp = 40
@@ -91,12 +100,13 @@ _import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
 [node name="VRMobileCamera" type="Spatial" parent="."]
 
 _import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
-transform/local = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.0496559, 0 )
+transform/local = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.0492748, 0 )
 script/script = ExtResource( 1 )
 __meta__ = { "_editor_icon":ExtResource( 2 ) }
 eyes_distance = 0.6
 eyes_convergence = 18.0
 walking_speed = 0.5
+stop_walking_while_selecting = true
 fov = 60
 near = 0.1
 far = 1000
@@ -161,13 +171,12 @@ environment = SubResource( 1 )
 
 [node name="landscape" type="Spatial" parent="."]
 
-editor/display_folded = true
 _import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
 
 [node name="ground" type="TestCube" parent="landscape"]
 
 _import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
-transform/local = Transform( 100, 0, 0, 0, 0.1, 0, 0, 0, 100, 0, -1.02222, 0 )
+transform/local = Transform( 100, 0, 0, 0, 0.1, 0, 0, 0, 100, -0.010376, -1.07312, -0.0119629 )
 layers = 1
 geometry/visible = true
 geometry/material_override = null
@@ -183,10 +192,167 @@ geometry/visible_in_all_rooms = false
 geometry/use_baked_light = false
 geometry/baked_light_tex_id = 0
 
-[node name="TestCube 2" type="TestCube" parent="landscape"]
+[node name="StaticBody" type="StaticBody" parent="landscape"]
 
 _import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
-transform/local = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -8.40363 )
+transform/local = Transform( 0.870794, 0, -0.491648, -0.491014, 0.0507605, -0.869671, 0.0249563, 0.998711, 0.0442019, 0.181643, 0, -18.0332 )
+input/ray_pickable = true
+input/capture_on_drag = false
+shape_count = 1
+shapes/0/shape = SubResource( 4 )
+shapes/0/transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+shapes/0/trigger = true
+collision/layers = 1
+collision/mask = 1
+friction = 1.0
+bounce = 0.0
+constant_linear_velocity = Vector3( 0, 0, 0 )
+constant_angular_velocity = Vector3( 0, 0, 0 )
+script/script = SubResource( 5 )
+
+[node name="CollisionShape" type="CollisionShape" parent="landscape/StaticBody"]
+
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+shape = SubResource( 4 )
+trigger = true
+_update_shape_index = 0
+
+[node name="TestCube" type="TestCube" parent="landscape/StaticBody"]
+
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+transform/local = Transform( 1, 0, -2.98023e-08, 0, 1, 0, 2.98023e-08, 0, 1, 0, 0, 0 )
+layers = 1
+geometry/visible = true
+geometry/material_override = SubResource( 2 )
+geometry/cast_shadow = 1
+geometry/receive_shadows = true
+geometry/range_begin = 0.0
+geometry/range_end = 0.0
+geometry/extra_cull_margin = 0.0
+geometry/billboard = false
+geometry/billboard_y = false
+geometry/depth_scale = false
+geometry/visible_in_all_rooms = false
+geometry/use_baked_light = false
+geometry/baked_light_tex_id = 0
+
+[node name="StaticBody1" type="StaticBody" parent="landscape"]
+
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+transform/local = Transform( 0.870794, 0, -0.491648, 0, 1, 0, 0.491648, 0, 0.870794, -16.4859, 0, -1.30653 )
+input/ray_pickable = true
+input/capture_on_drag = false
+shape_count = 1
+shapes/0/shape = SubResource( 4 )
+shapes/0/transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+shapes/0/trigger = true
+collision/layers = 1
+collision/mask = 1
+friction = 1.0
+bounce = 0.0
+constant_linear_velocity = Vector3( 0, 0, 0 )
+constant_angular_velocity = Vector3( 0, 0, 0 )
+script/script = SubResource( 5 )
+
+[node name="CollisionShape" type="CollisionShape" parent="landscape/StaticBody1"]
+
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+shape = SubResource( 4 )
+trigger = true
+_update_shape_index = 0
+
+[node name="TestCube" type="TestCube" parent="landscape/StaticBody1"]
+
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+transform/local = Transform( 1, 0, -2.98023e-08, 0, 1, 0, 2.98023e-08, 0, 1, 0, 0, 0 )
+layers = 1
+geometry/visible = true
+geometry/material_override = SubResource( 2 )
+geometry/cast_shadow = 1
+geometry/receive_shadows = true
+geometry/range_begin = 0.0
+geometry/range_end = 0.0
+geometry/extra_cull_margin = 0.0
+geometry/billboard = false
+geometry/billboard_y = false
+geometry/depth_scale = false
+geometry/visible_in_all_rooms = false
+geometry/use_baked_light = false
+geometry/baked_light_tex_id = 0
+
+[node name="StaticBody2" type="StaticBody" parent="landscape"]
+
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+transform/local = Transform( 0.968975, 0, -0.247157, 0, 1, 0, 0.247157, 0, 0.968975, 0.884241, 0, 10.3591 )
+input/ray_pickable = true
+input/capture_on_drag = false
+shape_count = 1
+shapes/0/shape = SubResource( 4 )
+shapes/0/transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+shapes/0/trigger = true
+collision/layers = 1
+collision/mask = 1
+friction = 1.0
+bounce = 0.0
+constant_linear_velocity = Vector3( 0, 0, 0 )
+constant_angular_velocity = Vector3( 0, 0, 0 )
+script/script = SubResource( 5 )
+
+[node name="CollisionShape" type="CollisionShape" parent="landscape/StaticBody2"]
+
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+shape = SubResource( 4 )
+trigger = true
+_update_shape_index = 0
+
+[node name="TestCube" type="TestCube" parent="landscape/StaticBody2"]
+
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+transform/local = Transform( 1, 0, -2.98023e-08, 0, 1, 0, 2.98023e-08, 0, 1, 0, 0, 0 )
+layers = 1
+geometry/visible = true
+geometry/material_override = SubResource( 2 )
+geometry/cast_shadow = 1
+geometry/receive_shadows = true
+geometry/range_begin = 0.0
+geometry/range_end = 0.0
+geometry/extra_cull_margin = 0.0
+geometry/billboard = false
+geometry/billboard_y = false
+geometry/depth_scale = false
+geometry/visible_in_all_rooms = false
+geometry/use_baked_light = false
+geometry/baked_light_tex_id = 0
+
+[node name="StaticBody3" type="StaticBody" parent="landscape"]
+
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+transform/local = Transform( 0.499704, -0.818961, -0.282132, 0.713146, 0.573849, -0.402641, 0.491648, 0, 0.870794, 9.3259, 0, -3.45398 )
+input/ray_pickable = true
+input/capture_on_drag = false
+shape_count = 1
+shapes/0/shape = SubResource( 4 )
+shapes/0/transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+shapes/0/trigger = true
+collision/layers = 1
+collision/mask = 1
+friction = 1.0
+bounce = 0.0
+constant_linear_velocity = Vector3( 0, 0, 0 )
+constant_angular_velocity = Vector3( 0, 0, 0 )
+script/script = SubResource( 5 )
+
+[node name="CollisionShape" type="CollisionShape" parent="landscape/StaticBody3"]
+
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+shape = SubResource( 4 )
+trigger = true
+_update_shape_index = 0
+
+[node name="TestCube" type="TestCube" parent="landscape/StaticBody3"]
+
+_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+transform/local = Transform( 1, 0, -2.98023e-08, 0, 1, 0, 2.98023e-08, 0, 1, 0, 0, 0 )
 layers = 1
 geometry/visible = true
 geometry/material_override = SubResource( 2 )
@@ -794,7 +960,7 @@ geometry/baked_light_tex_id = 0
 [node name="TestCube6" type="TestCube" parent="landscape"]
 
 _import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
-transform/local = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -6.03702, 0, -2.23925 )
+transform/local = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 12.1119, 0, 0.141379 )
 layers = 1
 geometry/visible = true
 geometry/material_override = null
@@ -928,25 +1094,6 @@ geometry/baked_light_tex_id = 0
 
 _import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
 transform/local = Transform( -0.953975, 0, 0.299886, 0, 1, 0, -0.299886, 0, -0.953975, 60.1045, 0, -67.5616 )
-layers = 1
-geometry/visible = true
-geometry/material_override = null
-geometry/cast_shadow = 1
-geometry/receive_shadows = true
-geometry/range_begin = 0.0
-geometry/range_end = 0.0
-geometry/extra_cull_margin = 0.0
-geometry/billboard = false
-geometry/billboard_y = false
-geometry/depth_scale = false
-geometry/visible_in_all_rooms = false
-geometry/use_baked_light = false
-geometry/baked_light_tex_id = 0
-
-[node name="TestCube7" type="TestCube" parent="landscape"]
-
-_import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
-transform/local = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 12.8127, 0, -10.2886 )
 layers = 1
 geometry/visible = true
 geometry/material_override = null
@@ -1402,7 +1549,7 @@ geometry/baked_light_tex_id = 0
 [node name="TestCube10" type="TestCube" parent="landscape"]
 
 _import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
-transform/local = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0.35661, 0, 13.1462 )
+transform/local = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 6.77592, 0, 13.1462 )
 layers = 1
 geometry/visible = true
 geometry/material_override = null
@@ -1858,7 +2005,7 @@ geometry/baked_light_tex_id = 0
 [node name="TestCube13" type="TestCube" parent="landscape"]
 
 _import_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
-transform/local = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 1.80855, 0, -17.803 )
+transform/local = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 8.54874, 0, -17.803 )
 layers = 1
 geometry/visible = true
 geometry/material_override = null
